@@ -107,6 +107,61 @@ del gyro_df["elapsed (s)"]
 # Turn into function
 # --------------------------------------------------------------
 
+files = glob("../../data/raw/MetaMotion/*.csv")
+
+# define a function
+
+
+def read_data_from_files(files):
+    # create accelerometer and gyroscope empty df
+    acc_df = pd.DataFrame()
+    gyro_df = pd.DataFrame()
+
+    # create a set. use this to increment the set number and create a unique identifier
+    acc_set = 1
+    gyro_set = 1
+
+    # build a loop to loop over all the files
+    for f in files:
+        # for each file we extract the participant, label and category
+        participant = f.split("-")[0].replace(data_path, "")
+        label = f.split("-")[1]
+        category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
+
+        df = pd.read_csv(f)
+
+        # we add extra columns to the dataframe in each file
+        df["participant"] = participant
+        df["label"] = label
+        df["category"] = category
+
+        if "Gyroscope" in f:
+            df["set"] = gyro_set
+            gyro_set += 1
+            gyro_df = pd.concat([gyro_df, df])
+
+        if "Accelerometer" in f:
+            df["set"] = acc_set
+            acc_set += 1
+            acc_df = pd.concat([acc_df, df])
+
+    gyro_df.index = pd.to_datetime(gyro_df["epoch (ms)"], unit="ms")
+    acc_df.index = pd.to_datetime(acc_df["epoch (ms)"], unit="ms")
+
+    # we remove other date and time columns
+    del acc_df["epoch (ms)"]
+    del acc_df["time (01:00)"]
+    del acc_df["elapsed (s)"]
+
+    del gyro_df["epoch (ms)"]
+    del gyro_df["time (01:00)"]
+    del gyro_df["elapsed (s)"]
+
+    return acc_df, gyro_df
+
+
+acc_df, gyro_df = read_data_from_files(files)
+
 
 # --------------------------------------------------------------
 # Merging datasets
