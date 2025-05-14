@@ -6,6 +6,8 @@ import matplotlib as mpl
 # Load data
 # --------------------------------------------------------------
 
+# read our pickle file
+df = pd.read_pickle("../../data/interim/01_data_processed.pkl")
 
 # --------------------------------------------------------------
 # Plot single columns
