@@ -167,6 +167,27 @@ acc_df, gyro_df = read_data_from_files(files)
 # Merging datasets
 # --------------------------------------------------------------
 
+# axis = 1 means we are merging column wise
+# axis = 0 means we are merging row wise
+# in order not to have duplicate columns
+data_merged = pd.concat([acc_df.iloc[:, :3], gyro_df], axis=1)
+
+# rename columns
+data_merged.columns = [
+    "acc_x",
+    "acc_y",
+    "acc_z",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    "label",
+    "category",
+    "participant",
+    "set",
+]
+
+# to remove the NaN and have proper data for every row
+
 
 # --------------------------------------------------------------
 # Resample data (frequency conversion)
