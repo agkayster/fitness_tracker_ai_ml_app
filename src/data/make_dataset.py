@@ -27,7 +27,7 @@ len(files)
 
 data_path = "../../data/raw/MetaMotion/"
 
-f = files[0]
+f = files[1]
 
 # we extract 3 variables from the filename
 # 1. participant
@@ -36,7 +36,7 @@ f = files[0]
 
 participant = f.split("-")[0].replace(data_path, "")
 label = f.split("-")[1]
-category = f.split("-")[2].rstrip("123")
+category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
 
 df = pd.read_csv(f)
 
@@ -48,6 +48,40 @@ df["category"] = category
 # --------------------------------------------------------------
 # Read all files
 # --------------------------------------------------------------
+
+# create accelerometer and gyroscope empty df
+acc_df = pd.DataFrame()
+gyro_df = pd.DataFrame()
+
+# create a set. use this to increment the set number and create a unique identifier
+acc_set = 1
+gyro_set = 1
+
+# build a loop to loop over all the files
+for f in files:
+    # for each file we extract the participant, label and category
+    participant = f.split("-")[0].replace(data_path, "")
+    label = f.split("-")[1]
+    category = f.split("-")[2].rstrip("123").rstrip("_MetaWear_2019")
+
+    df = pd.read_csv(f)
+
+    # we add extra columns to the dataframe in each file
+    df["participant"] = participant
+    df["label"] = label
+    df["category"] = category
+
+    # if file is accelerometer, we contatinate the accelerometer df (which was initially empty) and df
+    if "Accelerometer" in f:
+        df["set"] = acc_set
+        acc_set += 1
+        acc_df = pd.concat([acc_df, df])
+
+    # if file is gyroscope, we contatinate the gyroscope df (which was initially empty) and df
+    if "Gyroscope" in f:
+        df["set"] = gyro_set
+        gyro_set += 1
+        gyro_df = pd.concat([gyro_df, df])
 
 
 # --------------------------------------------------------------
