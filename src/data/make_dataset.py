@@ -27,7 +27,7 @@ len(files)
 
 data_path = "../../data/raw/MetaMotion/"
 
-f = files[1]
+f = files[0]
 
 # we extract 3 variables from the filename
 # 1. participant
@@ -71,23 +71,37 @@ for f in files:
     df["label"] = label
     df["category"] = category
 
-    # if file is accelerometer, we contatinate the accelerometer df (which was initially empty) and df
-    if "Accelerometer" in f:
-        df["set"] = acc_set
-        acc_set += 1
-        acc_df = pd.concat([acc_df, df])
-
-    # if file is gyroscope, we contatinate the gyroscope df (which was initially empty) and df
     if "Gyroscope" in f:
         df["set"] = gyro_set
         gyro_set += 1
         gyro_df = pd.concat([gyro_df, df])
+
+    if "Accelerometer" in f:
+        df["set"] = acc_set
+        acc_set += 1
+        acc_df = pd.concat([acc_df, df])
 
 
 # --------------------------------------------------------------
 # Working with datetimes
 # --------------------------------------------------------------
 
+# looking at the different datetimes
+acc_df.info()
+
+pd.to_datetime(df["epoch (ms)"], unit="ms")
+
+gyro_df.index = pd.to_datetime(gyro_df["epoch (ms)"], unit="ms")
+acc_df.index = pd.to_datetime(acc_df["epoch (ms)"], unit="ms")
+
+# we remove other date and time columns
+del acc_df["epoch (ms)"]
+del acc_df["time (01:00)"]
+del acc_df["elapsed (s)"]
+
+del gyro_df["epoch (ms)"]
+del gyro_df["time (01:00)"]
+del gyro_df["elapsed (s)"]
 
 # --------------------------------------------------------------
 # Turn into function
