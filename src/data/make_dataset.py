@@ -17,11 +17,33 @@ single_file_gyro = pd.read_csv(
 # List all data in data/raw/MetaMotion
 # --------------------------------------------------------------
 
+files = glob("../../data/raw/MetaMotion/*.csv")
+len(files)
+
 
 # --------------------------------------------------------------
 # Extract features from filename
 # --------------------------------------------------------------
 
+data_path = "../../data/raw/MetaMotion/"
+
+f = files[0]
+
+# we extract 3 variables from the filename
+# 1. participant
+# 2. label(exercise)
+# 3. category of the set (eg. light or heavy)
+
+participant = f.split("-")[0].replace(data_path, "")
+label = f.split("-")[1]
+category = f.split("-")[2].rstrip("123")
+
+df = pd.read_csv(f)
+
+# we add extra columns to the dataframe
+df["participant"] = participant
+df["label"] = label
+df["category"] = category
 
 # --------------------------------------------------------------
 # Read all files
