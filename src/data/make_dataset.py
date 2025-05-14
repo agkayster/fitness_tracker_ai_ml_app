@@ -167,13 +167,66 @@ acc_df, gyro_df = read_data_from_files(files)
 # Merging datasets
 # --------------------------------------------------------------
 
+# axis = 1 means we are merging column wise
+# axis = 0 means we are merging row wise
+# in order not to have duplicate columns
+data_merged = pd.concat([acc_df.iloc[:, :3], gyro_df], axis=1)
+
+# rename columns
+data_merged.columns = [
+    "acc_x",
+    "acc_y",
+    "acc_z",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    "label",
+    "category",
+    "participant",
+    "set",
+]
+
 
 # --------------------------------------------------------------
 # Resample data (frequency conversion)
 # --------------------------------------------------------------
 
-# Accelerometer:    12.500HZ
-# Gyroscope:        25.000Hz
+# Accelerometer:    12.500HZ 1/12
+# Gyroscope:        25.000Hz 1/25
+
+# here we are saying for all numerical values over a 200ms period we want to take the mean (average)
+# for the "label", "category", "participant" and "set" we want to take the last value
+sampling = {
+    "acc_x": "mean",
+    "acc_y": "mean",
+    "acc_z": "mean",
+    "gyro_x": "mean",
+    "gyro_y": "mean",
+    "gyro_z": "mean",
+    "label": "last",
+    "category": "last",
+    "participant": "last",
+    "set": "last",
+}
+
+# for every 200ms we get as much information as possible for 1000 records
+# [:1000] is used to limit the number of records to 1000
+data_merged = data_merged[:1000].resample(rule="200ms").apply(sampling)
+
+# split into days using a list comprehension method
+# this is a list with data frames for each day
+days = [g for n, g in data_merged.groupby(pd.Grouper(freq="D"))]
+
+# we do the resampling per day and merge it all together for a week
+# this a list comprehesnsion way of saying, we loop over days and for each df in days we apply the resample rule with the following sample and we would drop any row where there is a null or no data
+data_resampled = pd.concat(
+    [df.resample(rule="200ms").apply(sampling).dropna() for df in days]
+)
+
+data_resampled.info()
+
+# change our "set" type to integer instead of float
+data_resampled["set"] = data_resampled["set"].astype("int")
 
 
 # --------------------------------------------------------------
