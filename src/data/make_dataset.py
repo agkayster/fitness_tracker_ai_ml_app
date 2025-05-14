@@ -232,3 +232,9 @@ data_resampled["set"] = data_resampled["set"].astype("int")
 # --------------------------------------------------------------
 # Export dataset
 # --------------------------------------------------------------
+
+# Export data_resampled into our external data folder to intermi folder as a pickle file
+
+# pickle files are ideal to use because they are smaller in size, faster to load and you do not bother about conversions when exporting or reading them again
+
+data_resampled.to_pickle("../../data/interim/01_data_processed.pkl")
