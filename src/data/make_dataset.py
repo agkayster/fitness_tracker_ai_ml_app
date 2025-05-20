@@ -27,7 +27,7 @@ len(files)
 
 data_path = "../../data/raw/MetaMotion/"
 
-f = files[0]
+f = files[1]
 
 # we extract 3 variables from the filename
 # 1. participant
@@ -71,15 +71,15 @@ for f in files:
     df["label"] = label
     df["category"] = category
 
-    if "Gyroscope" in f:
-        df["set"] = gyro_set
-        gyro_set += 1
-        gyro_df = pd.concat([gyro_df, df])
-
     if "Accelerometer" in f:
         df["set"] = acc_set
         acc_set += 1
         acc_df = pd.concat([acc_df, df])
+
+    if "Gyroscope" in f:
+        df["set"] = gyro_set
+        gyro_set += 1
+        gyro_df = pd.concat([gyro_df, df])
 
 
 # --------------------------------------------------------------
@@ -172,6 +172,9 @@ acc_df, gyro_df = read_data_from_files(files)
 # in order not to have duplicate columns
 data_merged = pd.concat([acc_df.iloc[:, :3], gyro_df], axis=1)
 
+# to see the forst 50 rows
+data_merged.head(50)
+
 # rename columns
 data_merged.columns = [
     "acc_x",
@@ -196,6 +199,7 @@ data_merged.columns = [
 
 # here we are saying for all numerical values over a 200ms period we want to take the mean (average)
 # for the "label", "category", "participant" and "set" we want to take the last value
+
 sampling = {
     "acc_x": "mean",
     "acc_y": "mean",
@@ -208,10 +212,11 @@ sampling = {
     "category": "last",
     "set": "last",
 }
-
+# this mean for every second we take the mean for a row of 100
 # for every 200ms we get as much information as possible for 1000 records
 # [:1000] is used to limit the number of records to 1000
-data_merged = data_merged[:1000].resample(rule="200ms").apply(sampling)
+data_merged[:1000].resample(rule="200ms").apply(sampling)
+
 
 # split into days using a list comprehension method
 # this is a list with data frames for each day
