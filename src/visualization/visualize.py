@@ -68,11 +68,27 @@ mpl.rcParams["figure.figsize"] = (10, 5)
 mpl.rcParams["figure.dpi"] = 100
 
 
-
 # --------------------------------------------------------------
 # Compare medium vs. heavy sets
 # --------------------------------------------------------------
 
+# here we want to spot any differences between the medium and heavy sets of any particular exercise
+# here we define another subset
+# use "query" method from pandas to create subsets
+
+category_df = (
+    df.query("label == 'squat'").query("participant == 'A'").reset_index(drop=True)
+)
+
+# now to comapre the medium and the heavy sets for the squat of participant A
+# we create a grouped plot using "groupby" method
+
+# to apply styling and make the labels show on the plots apart from the legend
+fig, ax = plt.subplots()
+category_df.groupby(["category"])["acc_y"].plot()
+ax.set_ylabel("acc_y")
+ax.set_xlabel("samples")
+plt.legend()
 
 # --------------------------------------------------------------
 # Compare participants
