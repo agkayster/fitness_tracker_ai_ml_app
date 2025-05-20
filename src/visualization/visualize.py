@@ -179,7 +179,7 @@ for label in labels:
             # if you use double brackets, it will return a dataframe
             # a series does not take multiple columns
             all_axis_df[["gyro_x", "gyro_y", "gyro_z"]].plot(ax=ax)
-            ax.set_ylabel("gyro_y")
+            ax.set_ylabel("gyro_y")ejike
             ax.set_xlabel("samples")
             plt.title(f"{label} - ({participant})".title())
             plt.legend()
