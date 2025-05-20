@@ -45,10 +45,28 @@ for label in df["label"].unique():
 
 # here we are visualizing the whole set of each exercise in one figure
 
+# here we want to view details of the first 100 records
+# for every subset, we plot the first 100 samples
+for label in df["label"].unique():
+    subset = df[df["label"] == label]
+    # display dataframes within a loop
+    # display(subset.head(2))
+    # we now plot the subset
+    fig, ax = plt.subplots()
+    plt.plot(subset[:100]["acc_y"].reset_index(drop=True), label=label)
+    plt.legend()
+    plt.show()
+
 
 # --------------------------------------------------------------
 # Adjust plot settings
 # --------------------------------------------------------------
+# here we are setting the font size and fig size for the plots
+mpl.style.use("seaborn-v0_8-deep")
+
+mpl.rcParams["figure.figsize"] = (10, 5)
+mpl.rcParams["figure.dpi"] = 100
+
 
 
 # --------------------------------------------------------------
