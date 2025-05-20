@@ -94,6 +94,18 @@ plt.legend()
 # Compare participants
 # --------------------------------------------------------------
 
+# here we want to compare the bench exercise of all participants
+# query the dataframe using a label of "bench" and sort the values by participant (alphabetical order)
+# reset index to look at the samples not time intervals
+participant_df = (
+    df.query("label == 'bench'").sort_values("participant").reset_index(drop=True)
+)
+
+fig, ax = plt.subplots()
+participant_df.groupby(["participant"])["acc_y"].plot()
+ax.set_ylabel("acc_y")
+ax.set_xlabel("samples")
+plt.legend()
 
 # --------------------------------------------------------------
 # Plot multiple axis
