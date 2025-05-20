@@ -136,7 +136,53 @@ plt.legend()
 # --------------------------------------------------------------
 # Create a loop to plot all combinations per sensor
 # --------------------------------------------------------------
+labels = df["label"].unique()
+participants = df["participant"].unique()
 
+# this is for the accelerometer data
+for label in labels:
+    for participant in participants:
+        all_axis_df = (
+            df.query(f"label == '{label}'")
+            .query(f"participant == '{participant}'")
+            .reset_index(drop=True)
+        )
+
+        if len(all_axis_df) > 0:
+            # now we create a figure for our axis and plots
+            fig, ax = plt.subplots()
+            # we are creating a subset with multiple columns
+            # if you use single brackets, it will return a pandas series
+            # if you use double brackets, it will return a dataframe
+            # a series does not take multiple columns
+            all_axis_df[["acc_x", "acc_y", "acc_z"]].plot(ax=ax)
+            ax.set_ylabel("acc_y")
+            ax.set_xlabel("samples")
+            plt.title(f"{label} - ({participant})".title())
+            plt.legend()
+
+
+# this is for the gyroscope data
+for label in labels:
+    for participant in participants:
+        all_axis_df = (
+            df.query(f"label == '{label}'")
+            .query(f"participant == '{participant}'")
+            .reset_index(drop=True)
+        )
+
+        if len(all_axis_df) > 0:
+            # now we create a figure for our axis and plots
+            fig, ax = plt.subplots()
+            # we are creating a subset with multiple columns
+            # if you use single brackets, it will return a pandas series
+            # if you use double brackets, it will return a dataframe
+            # a series does not take multiple columns
+            all_axis_df[["gyro_x", "gyro_y", "gyro_z"]].plot(ax=ax)
+            ax.set_ylabel("gyro_y")
+            ax.set_xlabel("samples")
+            plt.title(f"{label} - ({participant})".title())
+            plt.legend()
 
 # --------------------------------------------------------------
 # Combine plots in one figure
