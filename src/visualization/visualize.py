@@ -111,6 +111,27 @@ plt.legend()
 # Plot multiple axis
 # --------------------------------------------------------------
 
+# we are plotting the x, y and z axis for the accelerometer data and gyroscope data
+# we used the f-string here for querying for a variable, this would be done dynamically instead of statically
+label = "squat"
+participant = "A"
+all_axis_df = (
+    df.query(f"label == '{label}'")
+    .query(f"participant == '{participant}'")
+    .reset_index(drop=True)
+)
+
+# now we create a figure for our axis and plots
+fig, ax = plt.subplots()
+# we are creating a subset with multiple columns
+# if you use single brackets, it will return a pandas series
+# if you use double brackets, it will return a dataframe
+# a series does not take multiple columns
+all_axis_df[["acc_x", "acc_y", "acc_z"]].plot(ax=ax)
+ax.set_ylabel("acc_y")
+ax.set_xlabel("samples")
+plt.legend()
+
 
 # --------------------------------------------------------------
 # Create a loop to plot all combinations per sensor
