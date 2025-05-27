@@ -80,7 +80,7 @@ category_df = (
     df.query("label == 'squat'").query("participant == 'A'").reset_index(drop=True)
 )
 
-# now to comapre the medium and the heavy sets for the squat of participant A
+# now to compare the medium and the heavy sets for the squat of participant A
 # we create a grouped plot using "groupby" method
 
 # to apply styling and make the labels show on the plots apart from the legend
@@ -198,7 +198,7 @@ combined_plot_df = (
     .reset_index(drop=True)
 )
 
-# we are starting with a single participant before we loop over all participants
+
 # here we tell ax to plot us our data in two rows
 fig, ax = plt.subplots(
     nrows=2,
@@ -226,3 +226,49 @@ ax[1].set_xlabel("samples")
 # --------------------------------------------------------------
 # Loop over all combinations and export for both sensors
 # --------------------------------------------------------------
+labels = df["label"].unique()
+participants = df["participant"].unique()
+
+for label in labels:
+    for participant in participants:
+        combined_plot_df = (
+            df.query(f"label == '{label}'")
+            .query(f"participant == '{participant}'")
+            .reset_index(drop=True)
+        )
+
+        if len(combined_plot_df) > 0:
+            # here we tell ax to plot us our data in two rows
+            fig, ax = plt.subplots(
+                nrows=2,
+                sharex=True,
+                figsize=(20, 10),
+            )
+
+            # ax, here refers to the ax above
+            # ax=ax[0] refers to the first row of the figure
+            # ax=ax[1] refers to the second row of the figure
+            combined_plot_df[["acc_x", "acc_y", "acc_z"]].plot(ax=ax[0])
+            combined_plot_df[["gyro_x", "gyro_y", "gyro_z"]].plot(ax=ax[1])
+
+            # we do some styling here
+            ax[0].legend(
+                loc="upper center",
+                bbox_to_anchor=(0.5, 1.15),
+                ncol=3,
+                fancybox=True,
+                shadow=True,
+            )
+            ax[1].legend(
+                loc="upper center",
+                bbox_to_anchor=(0.5, 1.15),
+                ncol=3,
+                fancybox=True,
+                shadow=True,
+            )
+
+            ax[1].set_xlabel("samples")
+            # this exports to "reports/figures folder"
+            # adds names of the exercise and participant to the file name
+            plt.savefig(f"../../reports/figures/{label.title()}-({participant}).png")
+            plt.show()
