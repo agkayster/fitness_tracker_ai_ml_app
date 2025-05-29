@@ -41,6 +41,7 @@ df[outlier_columns[3:] + ["label"]].boxplot(
 
 # function for Plotting Outliers in Time
 
+
 def plot_binary_outliers(dataset, col, outlier_col, reset_index):
     """Plot outliers in case of a binary outlier score. Here, the col specifies the real data
     column and outlier_col the columns with a binary value (outlier or not).
@@ -79,7 +80,7 @@ def plot_binary_outliers(dataset, col, outlier_col, reset_index):
     )
 
     plt.legend(
-        ["outlier " + col, "no outlier " + col],
+        ["no outlier " + col, "outlier " + col],
         loc="upper center",
         ncol=2,
         fancybox=True,
@@ -92,14 +93,53 @@ def plot_binary_outliers(dataset, col, outlier_col, reset_index):
 # Interquartile range (distribution based)
 # --------------------------------------------------------------
 
+
 # Insert IQR function
+def mark_outliers_iqr(dataset, col):
+    """Function to mark values as outliers using the IQR method.
+
+    Args:
+        dataset (pd.DataFrame): The dataset
+        col (string): The column you want apply outlier detection to
+
+    Returns:
+        pd.DataFrame: The original dataframe with an extra boolean column
+        indicating whether the value is an outlier or not.
+    """
+
+    dataset = dataset.copy()
+
+    Q1 = dataset[col].quantile(0.25)
+    Q3 = dataset[col].quantile(0.75)
+    IQR = Q3 - Q1
+
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+
+    dataset[col + "_outlier"] = (dataset[col] < lower_bound) | (
+        dataset[col] > upper_bound
+    )
+
+    return dataset
 
 
-# Plot a single column
+# Plot a single column (use accelerometer x-axis as an example)
+col = "acc_x"
+dataset = mark_outliers_iqr(df, col)
+plot_binary_outliers(
+    dataset=dataset, col=col, outlier_col=col + "_outlier", reset_index=True
+)
 
-
-# Loop over all columns
-
+# Loop over all columns (over all the outlier columns)
+for col in outlier_columns:
+    # for all outlier_columns(acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z)
+    # first run the mark_outliers_iqr function
+    # store the function in the dataset
+    # then plot the binary outliers (6 times)
+    dataset = mark_outliers_iqr(df, col)
+    plot_binary_outliers(
+        dataset=dataset, col=col, outlier_col=col + "_outlier", reset_index=True
+    )
 
 # --------------------------------------------------------------
 # Chauvenets criteron (distribution based)
