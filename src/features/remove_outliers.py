@@ -264,16 +264,70 @@ for col in outlier_columns:
 # Check outliers grouped by label
 # --------------------------------------------------------------
 
+label = "dead"
+
+# the "mark_outliers_iqr" function
+for col in outlier_columns:
+    dataset = mark_outliers_iqr(df[df["label"] == label], col)
+    plot_binary_outliers(dataset, col, col + "_outlier", reset_index=True)
+
+# the "mark_outliers_chauvenet" function
+for col in outlier_columns:
+    dataset = mark_outliers_chauvenet(df[df["label"] == label], col)
+    plot_binary_outliers(dataset, col, col + "_outlier", reset_index=True)
+
+# the "mark_outliers_lof" function
+dataset, outliers, X_scores = mark_outliers_lof(df, outlier_columns)
+for col in outlier_columns:
+    # for all outlier_columns(acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z)
+    # plot the binary outliers (6 times)
+    plot_binary_outliers(
+        dataset=dataset, col=col, outlier_col="outlier_lof", reset_index=True
+    )
+
 
 # --------------------------------------------------------------
 # Choose method and deal with outliers
 # --------------------------------------------------------------
 
 # Test on single column
+col = "gyro_z"
+dataset = mark_outliers_chauvenet(df, col=col)
+# this will show where the outliers are. They are markled as True
+dataset[dataset["gyro_z_outlier"]]
 
+# if the dataset for "gyro_z_outlier" is True
+# this will set the value of the "gyro_z" column to NaN
+# we do not get an output as this happens in place
+dataset.loc[dataset["gyro_z_outlier"], "gyro_z"] = np.nan
 
 # Create a loop
+
+# create a copy of the original dataframe
+# assign it to "outliers_removed_df" variable
+outliers_removed_df = df.copy()
+
+# loop over the outlier_columns
+for col in outlier_columns:
+    for label in df["label"].unique():
+        # for each label, we mark the outliers using the Chauvenet's method
+        dataset = mark_outliers_chauvenet(df[df["label"] == label], col)
+
+        # then we set the values marked as outliers to NaN
+        dataset.loc[dataset[col + "_outlier"]] = np.nan
+
+        # update the column in the original dataframe
+        outliers_removed_df.loc[(outliers_removed_df["label"] == label), col] = dataset[
+            col
+        ]
+
+        n_outliers = len(dataset) - len(dataset[col].dropna())
+
+        print(f"Removed {n_outliers} outliers from {col} for label {label}")
+
+outliers_removed_df.info()
 
 # --------------------------------------------------------------
 # Export new dataframe
 # --------------------------------------------------------------
+outliers_removed_df.to_pickle("../../data/interim/02_outliers_removed_chauvenets.pkl")
