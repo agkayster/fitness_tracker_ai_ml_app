@@ -27,6 +27,11 @@ plt.rcParams["lines.linewidth"] = 2  # Set default line width
 # Dealing with missing values (imputation)
 # --------------------------------------------------------------
 
+# using the interpolate function
+for col in predictor_columns:
+    df[col] = df[col].interpolate()
+
+# this will show you there are no missing values
 df.info()
 # --------------------------------------------------------------
 # Calculating set duration
