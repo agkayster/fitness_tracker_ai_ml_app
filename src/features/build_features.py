@@ -142,6 +142,23 @@ df_pca
 # Sum of squares attributes
 # --------------------------------------------------------------
 
+# copy the dataframe from above
+df_squared = df_pca.copy()
+
+# square all axis and add them together
+acc_r = df_squared["acc_x"] ** 2 + df_squared["acc_y"] ** 2 + df_squared["acc_z"] ** 2
+gyro_r = (
+    df_squared["gyro_x"] ** 2 + df_squared["gyro_y"] ** 2 + df_squared["gyro_z"] ** 2
+)
+
+# get the square root of acc_r and gyro_r
+df_squared["acc_r"] = np.sqrt(acc_r)
+df_squared["gyro_r"] = np.sqrt(gyro_r)
+
+# visualize the square root above
+subset = df_squared[df_squared["set"] == 14]
+subset[["acc_r", "gyro_r"]].plot(subplots=True)
+
 
 # --------------------------------------------------------------
 # Temporal abstraction
