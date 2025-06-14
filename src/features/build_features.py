@@ -105,6 +105,38 @@ for col in predictor_columns:
 # Principal component analysis PCA
 # --------------------------------------------------------------
 
+# create a df that we would apply PCA to
+df_pca = df_lowpass.copy()
+
+# create a new instance of the class PCA
+PCA = PrincipalComponentAnalysis()
+
+# should give a list of 6 values because there are 6 columns in total
+# PCA is a dimensionality reduction method
+# we move from alot of columns to less columns
+pc_values = PCA.determine_pc_explained_variance(df_pca, predictor_columns)
+
+# look at methods to determine the optimal amount of principal components
+# we use the ELBOW technique for this
+
+# example of an ELBOW
+plt.figure(figsize=(10, 10))
+plt.plot(range(1, len(predictor_columns) + 1), pc_values)
+plt.xlabel("principal component number")
+plt.ylabel("explained variance")
+plt.show()
+
+# applying the PCA
+# this will summarize our 6 columns (acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z) into 3 columns pca_1, pca_2, pca_3
+df_pca = PCA.apply_pca(df_pca, predictor_columns, 3)
+
+# we need to visualize our pca columns to get an understanding of what we have done
+# for this we create a subset
+subset = df_pca[df_pca["set"] == 35]
+subset[["pca_1", "pca_2", "pca_3"]].plot()
+
+df_pca
+
 
 # --------------------------------------------------------------
 # Sum of squares attributes
