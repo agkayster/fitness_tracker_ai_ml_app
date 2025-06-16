@@ -164,6 +164,65 @@ subset[["acc_r", "gyro_r"]].plot(subplots=True)
 # Temporal abstraction
 # --------------------------------------------------------------
 
+# create a copy of the last dataframe and assign it to a new dataframe
+df_temporal = df_squared.copy()
+
+# using the NumericalAbstraction class
+# this initiates a new class instance
+# by initializing the class below, we can use its methods/functions inside the class
+NumAbs = NumericalAbstraction()
+
+# add the new columns to the predictor columns
+predictor_columns = predictor_columns + ["acc_r", "gyro_r"]
+
+# Now we determine the window size
+# this captures how many values we want to look back for each of those values
+# finding the value of the window size is a bit of a trial and error process
+# 200 is our step size, which is 200 milliseconds
+# to get a window size of 1 second, we need 5 steps or 5 instances
+# our window size is 5 because we want to look back 1 second
+ws = int(1000 / 200)
+
+# Loop through the predictor columns and compute the mean and standard deviation
+for col in predictor_columns:
+    # calculate the mean and standard deviation for each column
+    df_temporal = NumAbs.abstract_numerical(df_temporal, [col], ws, "mean")
+    df_temporal = NumAbs.abstract_numerical(df_temporal, [col], ws, "std")
+
+
+df_temporal
+
+# here we create a subset by splitting the above loop
+# we then make a subset based on the set
+# Compute the values of each of the individual sets
+df_temporal_list = []
+
+# loop over the unique sets in the dataframe
+for s in df_temporal["set"].unique():
+    # create a subset for each set
+    subset = df_temporal[df_temporal["set"] == s].copy()
+    for col in predictor_columns:
+        # calculate the mean and standard deviation for each column
+        subset = NumAbs.abstract_numerical(subset, [col], ws, "mean")
+        subset = NumAbs.abstract_numerical(subset, [col], ws, "std")
+    df_temporal_list.append(subset)
+
+# Concatenate the list of dataframes into a single dataframe
+# we then overide the old df_temporal with the new one
+df_temporal = pd.concat(df_temporal_list)
+
+# by doing the above we have countered the spill over from the previous set into the next set
+df_temporal.info()
+
+# we check a typical subset
+subset[["acc_y", "acc_y_temp_mean_ws_5", "acc_y_temp_std_ws_5"]]
+
+# we take a plot of the above subset
+# this is for accelerometer
+subset[["acc_y", "acc_y_temp_mean_ws_5", "acc_y_temp_std_ws_5"]].plot()
+# this is for gyroscope
+subset[["gyro_y", "gyro_y_temp_mean_ws_5", "gyro_y_temp_std_ws_5"]].plot()
+
 
 # --------------------------------------------------------------
 # Frequency features
