@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from DataTransformation import LowPassFilter, PrincipalComponentAnalysis
 from TemporalAbstraction import NumericalAbstraction
+from FrequencyAbstraction import FourierTransformation
 
 
 # --------------------------------------------------------------
@@ -100,6 +101,8 @@ for col in predictor_columns:
     df_lowpass = Lowpass.low_pass_filter(df_lowpass, col, fs, cutoff, order=5)
     df_lowpass[col] = df_lowpass[col + "_lowpass"]
     del df_lowpass[col + "_lowpass"]
+
+df_lowpass
 
 # --------------------------------------------------------------
 # Principal component analysis PCA
@@ -227,6 +230,68 @@ subset[["gyro_y", "gyro_y_temp_mean_ws_5", "gyro_y_temp_std_ws_5"]].plot()
 # --------------------------------------------------------------
 # Frequency features
 # --------------------------------------------------------------
+
+# create a copy of the previous dataframe
+# here we need to reset the index
+df_freq = df_temporal.copy().reset_index()
+
+# using the FourierTransformation class
+# this initiates a new class instance
+# by initializing the class below, we can use its methods/functions inside the class
+FreqAbs = FourierTransformation()
+
+# here we define the sampling rate
+# timing interval
+fs = int(1000 / 200)
+
+# here we define the window size
+# 2800 is average time for a set
+ws = int(2800 / 200)
+
+# we first apply the FourierTransformation to one column
+# we take "df_freq" as our data table here
+# ["acc_y"] is the one column we are using first
+# the columns ["acc_y"] must be in a list ([])
+df_freq = FreqAbs.abstract_frequency(df_freq, ["acc_y"], ws, fs)
+
+# to see all columns created
+df_freq.columns
+
+# to visualize all our data
+subset = df_freq[df_freq["set"] == 15]
+subset[["acc_y"]].plot()
+subset[
+    [
+        "acc_y_max_freq",
+        "acc_y_freq_weighted",
+        "acc_y_pse",
+        "acc_y_freq_1.429_Hz_ws_14",
+        "acc_y_freq_2.5_Hz_ws_14",
+    ]
+].plot(subplots=True)
+
+# here we create a subset by splitting the above loop
+# we then make a subset based on the set
+# Compute the values of each of the individual sets
+df_freq_list = []
+
+# loop over the unique sets in the dataframe to apply FourierTransformation
+for s in df_freq["set"].unique():
+    print(f"Applying FourierTransformation to set {s}")
+    # create a subset for each set
+    subset = df_freq[df_freq["set"] == s].reset_index(drop=True).copy()
+    subset = FreqAbs.abstract_frequency(subset, predictor_columns, ws, fs)
+    df_freq_list.append(subset)
+
+
+# add the df_freq_list to the dataframe
+pd.concat(df_freq_list)
+
+# we store this in the dataframe
+# use "set_index" to drop the dicreet index and use "epoch (ms)"
+df_freq = pd.concat(df_freq_list).set_index("epoch (ms)", drop=True)
+
+
 
 
 # --------------------------------------------------------------
