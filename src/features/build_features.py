@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from DataTransformation import LowPassFilter, PrincipalComponentAnalysis
 from TemporalAbstraction import NumericalAbstraction
 from FrequencyAbstraction import FourierTransformation
+from sklearn.cluster import KMeans
 
 
 # --------------------------------------------------------------
@@ -316,10 +317,108 @@ df_freq = df_freq.dropna()
 df_freq = df_freq.iloc[::2, :]
 
 
-
 # --------------------------------------------------------------
 # Clustering
 # --------------------------------------------------------------
+
+# create a copy of the last dataframe
+df_cluster = df_freq.copy()
+
+# here we would be clustering based on the accelerometer data
+cluster_columns = ["acc_x", "acc_y", "acc_z"]
+
+# determine the amount of K we want to use
+k_values = range(2, 10)
+
+# store the inertias in a list
+# we would first define as an empty list
+inertias = []
+
+# now we loop over the dataframe and create our clusters
+for k in k_values:
+    # create a subset based on the cluster columns
+    subset = df_cluster[cluster_columns]
+    # define our KMeans model
+    kmeans = KMeans(n_clusters=k, n_init=20, random_state=0)
+    # specify the cluster labels
+    # fit_predict is used to instantly train the model and make predictions
+    # this would input the subset and create the cluster labels
+    # for each of the rows in the subset, it would assign the row to a cluster
+    # On the first iteration of the loop, k would be 2, a row can be assigned to cluster 1 or cluster 2
+    # so it would be value 1 or value 2
+    # On the second iteration of the loop, k would be 3, a row can be assigned to cluster 1, cluster 2 or cluster 3
+    # and it would do that all the way until k is 10
+    cluster_labels = kmeans.fit_predict(subset)
+
+    # we store the inertias
+    # we used the inertias to plot the on the graph
+    # use the Elbow method to determine the optimal amount of k
+    inertias.append(kmeans.inertia_)
+
+# view the inertias list
+inertias
+
+# use the list to create a plot and visually inspect whether we can create an Elbow
+# example of an ELBOW
+plt.figure(figsize=(10, 10))
+plt.plot(k_values, inertias)
+plt.xlabel("K")
+plt.ylabel("Sum of squared distances (inertia)")
+plt.show()
+
+
+kmeans = KMeans(n_clusters=5, n_init=20, random_state=0)
+subset = df_cluster[cluster_columns]
+df_cluster["cluster"] = kmeans.fit_predict(subset)
+
+# call df_cluster
+df_cluster
+
+# to visualize the clusters, we can use a scatter plot
+# plot clusters in 3D
+# projection="3d" is from matplotlib library
+fig = plt.figure(figsize=(15, 15))
+ax = fig.add_subplot(projection="3d")
+
+# looping over the dataframe and splitting it by cluster
+for c in df_cluster["cluster"].unique():
+    # loop over all the unique clusters
+    # create a subset of the dataframe for each cluster
+    subset = df_cluster[df_cluster["cluster"] == c]
+    # create a scatter plot for each cluster
+    # since projection="3d", we get a 3D plot with 3 different axis
+    ax.scatter(
+        subset["acc_x"],
+        subset["acc_y"],
+        subset["acc_z"],
+        label=f"Cluster {c}",
+        alpha=0.5,
+    )
+ax.set_xlabel("X-axis")
+ax.set_ylabel("Y-axis")
+ax.set_zlabel("Z-axis")
+plt.legend()
+plt.show()
+
+# we need to compare above cluster to the same cluster but splitting by labels
+
+fig = plt.figure(figsize=(15, 15))
+ax = fig.add_subplot(projection="3d")
+
+for label in df_cluster["label"].unique():
+    subset = df_cluster[df_cluster["label"] == label]
+    ax.scatter(
+        subset["acc_x"],
+        subset["acc_y"],
+        subset["acc_z"],
+        label=f"Label {label}",
+        alpha=0.5,
+    )
+ax.set_xlabel("X-axis")
+ax.set_ylabel("Y-axis")
+ax.set_zlabel("Z-axis")
+plt.legend()
+plt.show()
 
 
 # --------------------------------------------------------------
