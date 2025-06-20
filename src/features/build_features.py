@@ -292,11 +292,29 @@ pd.concat(df_freq_list)
 df_freq = pd.concat(df_freq_list).set_index("epoch (ms)", drop=True)
 
 
-
-
 # --------------------------------------------------------------
 # Dealing with overlapping windows
 # --------------------------------------------------------------
+
+# start by taking the latest dataframe
+# this will drop rows with NaN values/missing values
+df_freq = df_freq.dropna()
+
+# to deal with overlapping windows, we get rid of some part of the data
+# an allowance of 50% overlap is common, we get rid of 50% of the data
+# do this by skipping every second row
+# results in alot of data loss but pay off in the long run
+# models are less prone to overfitting
+
+# this means all rows and all columns using iloc
+# df_freq.iloc[:,:]
+
+# every column but the first two rows using iloc
+# df_freq.iloc[:2]
+
+# get every second row using iloc
+df_freq = df_freq.iloc[::2, :]
+
 
 
 # --------------------------------------------------------------
