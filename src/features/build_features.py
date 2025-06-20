@@ -424,3 +424,6 @@ plt.show()
 # --------------------------------------------------------------
 # Export dataset
 # --------------------------------------------------------------
+
+# we export the final dataframe to a pickle file
+df_cluster.to_pickle("../../data/interim/03_data_features.pkl")
