@@ -400,7 +400,7 @@ ax.set_zlabel("Z-axis")
 plt.legend()
 plt.show()
 
-# we need to compare above cluster to the same cluster but splitting by labels
+# we need to compare above cluster to the cluster below but splitting by labels
 
 fig = plt.figure(figsize=(15, 15))
 ax = fig.add_subplot(projection="3d")
