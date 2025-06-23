@@ -1,0 +1,96 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+from LearningAlgorithms import ClassificationAlgorithms
+import seaborn as sns
+import itertools
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+
+# Plot settings
+plt.style.use("fivethirtyeight")
+plt.rcParams["figure.figsize"] = (20, 5)
+plt.rcParams["figure.dpi"] = 100
+plt.rcParams["lines.linewidth"] = 2
+
+# load our data from previous pickle file
+df = pd.read_pickle("../../data/interim/03_data_features.pkl")
+
+
+# --------------------------------------------------------------
+# Create a training and test set
+# --------------------------------------------------------------
+
+# remove some columns from the dataset that we would not be using
+df_train = df.drop(["participant", "category", "set"], axis=1)
+
+# split the data into the X and Y variables of the training set
+# label points to our exercise labels e.g. "squat", "lunges", etc.
+# X variable is taking all columns except the label column from the training set
+X = df_train.drop("label", axis=1)
+
+# y variable is taking the "label" column from the training set
+y = df_train["label"]
+
+# use "train_test_split" to split the data into training and test sets
+# this takes control of the stochastic process that happens when splitting the data
+# we set the test size to 25% of the data and the random state to 42 for reproducibility
+# 75% of the data will be used for training and 25% for testing
+# stratify=y ensures that the distribution of labels is maintained in both sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42, stratify=y
+)
+
+# create a quick plot to see the stratify in action
+fig, ax = plt.subplots(figsize=(10, 5))
+df_train["label"].value_counts().plot(
+    kind="bar", ax=ax, color="blue", label="Total", alpha=0.7
+)
+y_train.value_counts().plot(
+    kind="bar", ax=ax, color="dodgerBlue", label="Train", alpha=0.7
+)
+y_test.value_counts().plot(
+    kind="bar", ax=ax, color="royalBlue", label="Test", alpha=0.7
+)
+plt.legend()
+plt.show()
+
+# --------------------------------------------------------------
+# Split feature subsets
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Perform forward feature selection using simple decision tree
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Grid search for best hyperparameters and model selection
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Create a grouped bar plot to compare the results
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Select best model and evaluate results
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Select train and test data based on participant
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Use best model again and evaluate results
+# --------------------------------------------------------------
+
+
+# --------------------------------------------------------------
+# Try a simpler model with the selected features
+# --------------------------------------------------------------
