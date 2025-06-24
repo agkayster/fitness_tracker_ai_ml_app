@@ -60,6 +60,42 @@ plt.show()
 # Split feature subsets
 # --------------------------------------------------------------
 
+# split the features into subsets based on the type of features
+
+# original features in the dataset
+basic_features = ["acc_x", "acc_y", "acc_z", "gyro_x", "gyro_y", "gyro_z    "]
+
+# square features
+square_features = ["acc_r", "gyro_r"]
+
+# principal component features
+pca_features = ["pca_1", "pca_2", "pca_3"]
+
+# time features
+time_features = [f for f in df_train.columns if "_temp_" in f]
+
+# freq features
+freq_features = [f for f in df_train.columns if ("_freq" in f) or ("_pse" in f)]
+
+# cluster features
+cluster_features = ["cluster"]
+
+print("Basic features:", len(basic_features))
+print("Square features:", len(square_features))
+print("PCA features:", len(pca_features))
+print("Time features:", len(time_features))
+print("Freq features:", len(freq_features))
+print("Cluster features:", len(cluster_features))
+
+# df_train.columns[30:]
+
+# we now create 4 different feature sets
+feature_set_1 = list(set(basic_features))
+
+# set is a data type in python, used in order to avoid duplicates and create a unique collection of items
+feature_set_2 = list(set(basic_features + square_features + pca_features))
+feature_set_3 = list(set(feature_set_2 + time_features))
+feature_set_4 = list(set(feature_set_3 + freq_features + cluster_features))
 
 # --------------------------------------------------------------
 # Perform forward feature selection using simple decision tree
