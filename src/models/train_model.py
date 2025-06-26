@@ -100,6 +100,73 @@ feature_set_4 = list(set(feature_set_3 + freq_features + cluster_features))
 # --------------------------------------------------------------
 # Perform forward feature selection using simple decision tree
 # --------------------------------------------------------------
+learner = ClassificationAlgorithms()
+
+max_features = 10  # maximum number of features to select
+
+# in order to fire up the selection, we need to see everythng that it outputs
+# this script will loop over all the individual columns which is 117 in total in the dataframe and it will train a decision tree/model 117 times and then it gets the best parameter
+# after that, it will loop over the 116 left over columns apart from the best performing and do the training again
+# it will run from 0 to 9, because we set the max_features to 10
+# after it runs, we highlight the selected features, ordered features and ordered scores.
+# selected features and ordered features are the same so we ignore one
+selected_features, ordered_features, ordered_scores = learner.forward_selection(
+    max_features, X_train, y_train
+)
+
+# best practice
+# you could get different results if you run the forward selection multiple times
+selected_features = [
+    "acc_z_freq_0.0_Hz_ws_14",
+    "acc_x_freq_0.0_Hz_ws_14",
+    "duration",
+    "acc_y_temp_mean_ws_5",
+    "gyro_r_temp_mean_ws_5",
+    "gyro_r_freq_1.429_Hz_ws_14",
+    "acc_z_freq_weighted",
+    "gyro_r_max_freq",
+    "gyro_z_temp_std_ws_5",
+    "gyro_x_freq_1.071_Hz_ws_14",
+]
+
+ordered_features = [
+    "acc_z_freq_0.0_Hz_ws_14",
+    "acc_x_freq_0.0_Hz_ws_14",
+    "duration",
+    "acc_y_temp_mean_ws_5",
+    "gyro_r_temp_mean_ws_5",
+    "gyro_r_freq_1.429_Hz_ws_14",
+    "acc_z_freq_weighted",
+    "gyro_r_max_freq",
+    "gyro_z_temp_std_ws_5",
+    "gyro_x_freq_1.071_Hz_ws_14",
+]
+
+ordered_scores = [
+    0.885556704584626,
+    0.9889693209238194,
+    0.9989658738366081,
+    0.9993105825577387,
+    0.9996552912788693,
+    0.9996552912788693,
+    0.9996552912788693,
+    0.9996552912788693,
+    0.9996552912788693,
+    0.9996552912788693,
+]
+
+
+# we plot the chart to visualize the results
+# plot shows the total number of features selected via forward selection features and the accuracy on the training data
+# the acc_z_freq_0.0_Hz_ws_14 gives us an 0.885556704584626 % accuracy (best feature)
+# the acc_x_freq_0.0_Hz_ws_14 is the second best feature gives us close to 99% accuracy (0.9889693209238194)
+#
+plt.figure(figsize=(10, 5))
+plt.plot(np.arange(1, max_features + 1, 1), ordered_scores)
+plt.xlabel("Number of features")
+plt.ylabel("Accuracy")
+plt.xticks(np.arange(1, max_features + 1, 1))
+plt.show()
 
 
 # --------------------------------------------------------------
