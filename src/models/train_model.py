@@ -292,6 +292,26 @@ for i, f in zip(range(len(possible_feature_sets)), feature_names):
 # Create a grouped bar plot to compare the results
 # --------------------------------------------------------------
 
+# now we look at our score dataframe
+score_df.sort_values(by="accuracy", ascending=False)
+
+
+# create a bar plot to see the effect of the models and feature sets
+plt.figure(figsize=(10, 10))
+sns.barplot(x="model", y="accuracy", hue="feature_set", data=score_df)
+plt.xlabel("Model")
+plt.ylabel("Accuracy")
+plt.ylim(0.7, 1)
+plt.legend(loc="lower right")
+plt.show()
+
+# from the bar plot "selected features" and "Feature Set 4" are the best performing feature sets
+# "selected features" is the best performing feature set with the highest accuracy
+# "Feature Set 4" is the second best performing feature set with a slightly lower accuracy
+# "Selected Features" and "Feature Set 4" have 99% accuracy
+# the best performing model i see is the "Decision Tree" with 99.9% accuracy
+
+
 
 # --------------------------------------------------------------
 # Select best model and evaluate results
