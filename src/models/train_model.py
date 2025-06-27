@@ -312,15 +312,106 @@ plt.show()
 # the best performing model i see is the "Decision Tree" with 99.9% accuracy
 
 
-
 # --------------------------------------------------------------
 # Select best model and evaluate results
 # --------------------------------------------------------------
+
+# the best performing model is the "Decision Tree"
+# here we are calling the learning class with decistion tree and we would train using the "X_train" and "y_train" data and validate using the "X_test" data
+# we would also perform a grid search
+# we pass in the "Selected Features" to the decision tree model
+(
+    class_train_y,
+    class_test_y,
+    class_train_prob_y,
+    class_test_prob_y,
+) = learner.decision_tree(
+    X_train[selected_features], y_train, X_test[selected_features], gridsearch=True
+)
+
+# use the output variables to calculate the accuracy score
+# "class_test_y" is our prediction
+# use our "y_test" to make an accuracy score
+# "y_test" is the original labels for the test set
+accuracy = accuracy_score(y_test, class_test_y)
+print("Accuracy of the best model (Decision Tree):", accuracy)
+
+# we set up our confusion matrix to see how well the model performed
+# use the probabilities
+# this shows all our labels
+classes = class_test_prob_y.columns
+
+# define a confusion matrix with variable "cm"
+# "cm" is an array/list
+cm = confusion_matrix(y_test, class_test_y, labels=classes)
+
+# we get the confusion matrix function
+# create confusion matrix for cm
+# this would plot a confusion matrix
+plt.figure(figsize=(10, 10))
+plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
+plt.title("Confusion matrix")
+plt.colorbar()
+tick_marks = np.arange(len(classes))
+plt.xticks(tick_marks, classes, rotation=45)
+plt.yticks(tick_marks, classes)
+
+thresh = cm.max() / 2.0
+for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    plt.text(
+        j,
+        i,
+        format(cm[i, j]),
+        horizontalalignment="center",
+        color="white" if cm[i, j] > thresh else "black",
+    )
+plt.ylabel("True label")
+plt.xlabel("Predicted label")
+plt.grid(False)
+plt.show()
 
 
 # --------------------------------------------------------------
 # Select train and test data based on participant
 # --------------------------------------------------------------
+
+# select a train and test split data based on the participant
+# we have 5 participants in the dataset
+# we would train on 4 participants except participant A
+# create a participant dataframe
+# we drop the "category" and "set" columns from the dataframe
+participant_df = df.drop(["category", "set"], axis=1)
+
+# select our training data from all participants except participant "A"
+X_train = participant_df[participant_df["participant"] != "A"].drop("label", axis=1)
+
+# we are only taking the "label" column from the training data where participant is not "A"
+y_train = participant_df[participant_df["participant"] != "A"]["label"]
+
+# this is for "test" data
+# this is our test data for participant "A"
+X_test = participant_df[participant_df["participant"] == "A"].drop("label", axis=1)
+
+# this is the label column for the test data where participant is "A"
+y_test = participant_df[participant_df["participant"] == "A"]["label"]
+
+# we remove the participant column from the training and test data
+X_train = X_train.drop(["participant"], axis=1)
+X_test = X_test.drop(["participant"], axis=1)
+
+# we plot the train and test data to see the distribution of labels
+fig, ax = plt.subplots(figsize=(10, 5))
+df_train["label"].value_counts().plot(
+    kind="bar", ax=ax, color="lightblue", label="Total", alpha=0.7
+)
+y_train.value_counts().plot(
+    kind="bar", ax=ax, color="dodgerBlue", label="Train", alpha=0.7
+)
+y_test.value_counts().plot(
+    kind="bar", ax=ax, color="royalBlue", label="Test", alpha=0.7
+)
+plt.legend()
+plt.show()
 
 
 # --------------------------------------------------------------
