@@ -325,7 +325,7 @@ plt.show()
     class_test_y,
     class_train_prob_y,
     class_test_prob_y,
-) = learner.decision_tree(
+) = learner.random_forest(
     X_train[selected_features], y_train, X_test[selected_features], gridsearch=True
 )
 
@@ -334,7 +334,7 @@ plt.show()
 # use our "y_test" to make an accuracy score
 # "y_test" is the original labels for the test set
 accuracy = accuracy_score(y_test, class_test_y)
-print("Accuracy of the best model (Decision Tree):", accuracy)
+print("Accuracy of the best model (Random Forest):", accuracy)
 
 # we set up our confusion matrix to see how well the model performed
 # use the probabilities
@@ -418,7 +418,108 @@ plt.show()
 # Use best model again and evaluate results
 # --------------------------------------------------------------
 
+# the best performing model is the "Random Forest"
+# the X_train, y_train, y_test and X_test are based on the participant split
+(
+    class_train_y,
+    class_test_y,
+    class_train_prob_y,
+    class_test_prob_y,
+) = learner.random_forest(
+    X_train[selected_features], y_train, X_test[selected_features], gridsearch=True
+)
+
+# use the output variables to calculate the accuracy score
+# "class_test_y" is our prediction
+# use our "y_test" to make an accuracy score
+# "y_test" is the original labels for the test set
+accuracy = accuracy_score(y_test, class_test_y)
+print("Accuracy of the best model (Random Forest):", accuracy)
+
+# we set up our confusion matrix to see how well the model performed
+# use the probabilities
+# this shows all our labels
+classes = class_test_prob_y.columns
+
+# define a confusion matrix with variable "cm"
+# "cm" is an array/list
+cm = confusion_matrix(y_test, class_test_y, labels=classes)
+
+# we get the confusion matrix function
+# create confusion matrix for cm
+# this would plot a confusion matrix
+plt.figure(figsize=(10, 10))
+plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
+plt.title("Confusion matrix")
+plt.colorbar()
+tick_marks = np.arange(len(classes))
+plt.xticks(tick_marks, classes, rotation=45)
+plt.yticks(tick_marks, classes)
+
+thresh = cm.max() / 2.0
+for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    plt.text(
+        j,
+        i,
+        format(cm[i, j]),
+        horizontalalignment="center",
+        color="white" if cm[i, j] > thresh else "black",
+    )
+plt.ylabel("True label")
+plt.xlabel("Predicted label")
+plt.grid(False)
+plt.show()
+
+# with the above, it shows our model can generalize well to unseen data and new people
+# the accuracy is 99.3% which is very good
+
 
 # --------------------------------------------------------------
-# Try a simpler model with the selected features
+# Try a complex model with less features
 # --------------------------------------------------------------
+
+# here we use a more complex model, a feedforward neural network
+# we are using selected features from the forward selection
+# But no grid search
+(
+    class_train_y,
+    class_test_y,
+    class_train_prob_y,
+    class_test_prob_y,
+) = learner.feedforward_neural_network(
+    X_train[feature_set_4], y_train, X_test[feature_set_4], gridsearch=False
+)
+
+accuracy = accuracy_score(y_test, class_test_y)
+print("Accuracy of the best model (feedforward_neural_network):", accuracy)
+
+classes = class_test_prob_y.columns
+
+cm = confusion_matrix(y_test, class_test_y, labels=classes)
+
+plt.figure(figsize=(10, 10))
+plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
+plt.title("Confusion matrix")
+plt.colorbar()
+tick_marks = np.arange(len(classes))
+plt.xticks(tick_marks, classes, rotation=45)
+plt.yticks(tick_marks, classes)
+
+thresh = cm.max() / 2.0
+for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    plt.text(
+        j,
+        i,
+        format(cm[i, j]),
+        horizontalalignment="center",
+        color="white" if cm[i, j] > thresh else "black",
+    )
+plt.ylabel("True label")
+plt.xlabel("Predicted label")
+plt.grid(False)
+plt.show()
+
+# with the above model, we have alot of errors i.e. in "ohp" vs "bench press"
+# the accuracy is 94.6% which is still good but not as good as the random forest model
+# using "feature_set_4" gives us a good accuracy but not as good as the random forest model
+
