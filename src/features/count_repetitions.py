@@ -39,6 +39,27 @@ df["gyro_r"] = np.sqrt(gyro_r)
 # Split data
 # --------------------------------------------------------------
 
+# we would split the data
+# create 5 dataframes for each exercise
+# we can study and reference them a lot easier
+
+# define dataframe for bench press exercise
+bench_df = df[df["label"] == "bench"]
+
+# define dataframe for ohp press exercise
+ohp_df = df[df["label"] == "ohp"]
+
+# define dataframe for squat exercise
+squat_df = df[df["label"] == "squat"]
+
+# define dataframe for deadlift exercise
+dead_df = df[df["label"] == "dead"]
+
+# define dataframe for row exercise
+row_df = df[df["label"] == "row"]
+
+
+
 
 # --------------------------------------------------------------
 # Visualize data to identify patterns
