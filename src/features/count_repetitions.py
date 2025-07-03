@@ -39,11 +39,42 @@ df["gyro_r"] = np.sqrt(gyro_r)
 # Split data
 # --------------------------------------------------------------
 
+# we would split the data
+# create 5 dataframes for each exercise
+# we can study and reference them a lot easier
+
+# define dataframe for bench press exercise
+bench_df = df[df["label"] == "bench"]
+
+# define dataframe for ohp press exercise
+ohp_df = df[df["label"] == "ohp"]
+
+# define dataframe for squat exercise
+squat_df = df[df["label"] == "squat"]
+
+# define dataframe for deadlift exercise
+dead_df = df[df["label"] == "dead"]
+
+# define dataframe for row exercise
+row_df = df[df["label"] == "row"]
+
 
 # --------------------------------------------------------------
 # Visualize data to identify patterns
 # --------------------------------------------------------------
 
+plot_df = bench_df
+
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_x"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_y"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_z"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_r"].plot()
+
+
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_x"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_y"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_z"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_r"].plot()
 
 # --------------------------------------------------------------
 # Configure LowPassFilter
