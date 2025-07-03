@@ -80,6 +80,13 @@ plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_r"].plot()
 # Configure LowPassFilter
 # --------------------------------------------------------------
 
+# specify the sampling frequency
+# because there are 5 instances per second
+fs = 1000 / 200
+
+# initialize the LowPassFilter
+LowPass = LowPassFilter()
+
 
 # --------------------------------------------------------------
 # Apply and tweak LowPassFilter
