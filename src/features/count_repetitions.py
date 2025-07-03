@@ -59,12 +59,22 @@ dead_df = df[df["label"] == "dead"]
 row_df = df[df["label"] == "row"]
 
 
-
-
 # --------------------------------------------------------------
 # Visualize data to identify patterns
 # --------------------------------------------------------------
 
+plot_df = bench_df
+
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_x"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_y"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_z"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["acc_r"].plot()
+
+
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_x"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_y"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_z"].plot()
+plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_r"].plot()
 
 # --------------------------------------------------------------
 # Configure LowPassFilter
