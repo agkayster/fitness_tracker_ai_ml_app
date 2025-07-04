@@ -19,7 +19,7 @@ df = pd.read_pickle("../../data/interim/02_outliers_removed_chauvenets.pkl")
 predictor_columns = list(df.columns[:6])
 
 # import Plot settings
-plt.style.use("fiveThirtyEight")  # Use a predefined style
+plt.style.use("fivethirtyeight")  # Use a predefined style
 plt.rcParams["figure.figsize"] = (20, 5)  # Set default figure size
 plt.rcParams["figure.dpi"] = 100  # Set default figure resolution
 plt.rcParams["lines.linewidth"] = 2  # Set default line width
@@ -114,6 +114,7 @@ df_pca = df_lowpass.copy()
 
 # create a new instance of the class PCA
 PCA = PrincipalComponentAnalysis()
+
 
 # should give a list of 6 values because there are 6 columns in total
 # PCA is a dimensionality reduction method

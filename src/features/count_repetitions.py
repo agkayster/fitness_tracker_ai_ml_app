@@ -110,7 +110,7 @@ bench_set["acc_r"].plot()
 # cutoff_frequency is 0.4
 # order is 5
 # column is "acc_r"
-column = "acc_r"
+column = "acc_y"
 
 # this would produce a new column called "acc_r_lowpass"
 # the lowpass filter function gives us a smooth pattern
@@ -130,8 +130,52 @@ LowPass.low_pass_filter(
 # Create function to count repetitions
 # --------------------------------------------------------------
 
-# we need a function to help us count the peaks and valleys (repetitions)
-# use the scipy.signal to achieve the counts
+
+# we now have to put everything in a function, so as to build dynamically
+def count_reps(dataset, cutoff=0.4, order=10, column="acc_r"):
+    # we need a function to help us count the peaks and valleys (repetitions)
+    # use the scipy.signal to achieve the counts
+    # column = "acc_r"
+    data = LowPass.low_pass_filter(
+        dataset,
+        col=column,
+        sampling_frequency=fs,
+        cutoff_frequency=cutoff,
+        order=order,
+    )
+    # we need a set
+    # bench_set["acc_r"].values this is a numpy array we pass into argrelextrema
+    # data[column + "_lowpass"].values this is a numpy array we pass into argrelextrema
+    # np.greater is the comparator we are using
+    # we first get an array of indexes if we run the below
+    # argrelextrema(bench_set["acc_r"].values, np.greater)
+    # the argrelextrema function produces 5 values i.e. 5 repetitions
+    argrelextrema(data[column + "_lowpass"].values, np.greater)
+
+    # next step is to implement the visualisation
+    indexes = argrelextrema(data[column + "_lowpass"].values, np.greater)
+    # this would identify the 5 peaks i.e. 5 maximum repetitions/count
+    peaks = data.iloc[indexes]
+
+    fig, ax = plt.subplots()
+    plt.plot(dataset[f"{column}_lowpass"])
+    plt.plot(peaks[f"{column}_lowpass"], "o", color="red")
+    ax.set_ylabel(f"{column}_lowpass")
+    exercise = dataset["label"].iloc[0].title()
+    category = dataset["category"].iloc[0].title()
+    plt.title(f"{category} {exercise}:{len(peaks)} Reps")
+    plt.show()
+
+    return len(peaks)
+
+
+# this calculates the total amount of reps or repetitions
+count_reps(bench_set, cutoff=0.4)
+count_reps(squat_set, cutoff=0.35)
+count_reps(row_set, cutoff=0.65, column="gyro_x")
+count_reps(ohp_set, cutoff=0.35)
+count_reps(dead_set, cutoff=0.4)
+
 
 # --------------------------------------------------------------
 # Create benchmark dataframe
