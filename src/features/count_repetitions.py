@@ -80,16 +80,58 @@ plot_df[plot_df["set"] == plot_df["set"].unique()[0]]["gyro_r"].plot()
 # Configure LowPassFilter
 # --------------------------------------------------------------
 
+# specify the sampling frequency
+# because there are 5 instances per second
+fs = 1000 / 200
+
+# initialize the LowPassFilter
+LowPass = LowPassFilter()
+
 
 # --------------------------------------------------------------
 # Apply and tweak LowPassFilter
 # --------------------------------------------------------------
+
+# we look at the plots from a single set perspective
+# below we have all single sets
+bench_set = bench_df[bench_df["set"] == bench_df["set"].unique()[0]]
+ohp_set = ohp_df[ohp_df["set"] == ohp_df["set"].unique()[0]]
+squat_set = squat_df[squat_df["set"] == squat_df["set"].unique()[0]]
+row_set = row_df[row_df["set"] == row_df["set"].unique()[0]]
+dead_set = dead_df[dead_df["set"] == dead_df["set"].unique()[0]]
+
+# we then apply the lowpass filter to the single sets
+# this gives us a messy pattern, not smooth
+bench_set["acc_r"].plot()
+
+# we need to use the lowpass filter to try and visualise something that resembles 5 repetitions
+# bench_set["acc_r"] is out data table
+# fs is our sampling frequency
+# cutoff_frequency is 0.4
+# order is 5
+# column is "acc_r"
+column = "acc_r"
+
+# this would produce a new column called "acc_r_lowpass"
+# the lowpass filter function gives us a smooth pattern
+# because with lowpass filter, we cut off all the noise
+LowPass.low_pass_filter(
+    bench_set,
+    col=column,
+    sampling_frequency=fs,
+    cutoff_frequency=0.4,
+    order=5,
+)[column + "_lowpass"].plot()
+
+# the above would show us the 5 repetitions in the plot both in the minimum and maximum
 
 
 # --------------------------------------------------------------
 # Create function to count repetitions
 # --------------------------------------------------------------
 
+# we need a function to help us count the peaks and valleys (repetitions)
+# use the scipy.signal to achieve the counts
 
 # --------------------------------------------------------------
 # Create benchmark dataframe
