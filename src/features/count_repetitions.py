@@ -105,12 +105,12 @@ dead_set = dead_df[dead_df["set"] == dead_df["set"].unique()[0]]
 bench_set["acc_r"].plot()
 
 # we need to use the lowpass filter to try and visualise something that resembles 5 repetitions
-# bench_set["acc_r"] is out data table
+# bench_set["acc_r"] is our data table
 # fs is our sampling frequency
 # cutoff_frequency is 0.4
 # order is 5
 # column is "acc_r"
-column = "acc_y"
+column = "acc_r"
 
 # this would produce a new column called "acc_r_lowpass"
 # the lowpass filter function gives us a smooth pattern
@@ -181,6 +181,38 @@ count_reps(dead_set, cutoff=0.4)
 # Create benchmark dataframe
 # --------------------------------------------------------------
 
+df["reps"] = df["category"].apply(lambda x: 5 if x == "heavy" else 10)
+
+# this would give us the ground truth. Ensuring there are no mistakes in the data
+rep_df = df.groupby(["label", "category", "set"])["reps"].max().reset_index()
+
+# adding a "reps_pred" meaning predicted reps column to the data table
+rep_df["reps_pred"] = 0
+
+# we now have to loop over everything in our count_reps function
+# do our calculations and add it to the "rep_df" dataframe
+
+for s in df["set"].unique():
+    subset = df[df["set"] == s]
+
+    column = "acc_y"
+    cutoff = 0.4
+
+    if subset["label"].iloc[0] == "squat":
+        cutoff = 0.35
+
+    if subset["label"].iloc[0] == "row":
+        cutoff = 0.65
+        column = "gyro_x"
+
+    if subset["label"].iloc[0] == "ohp":
+        cutoff = 0.35
+
+    reps = count_reps(subset, cutoff=cutoff, column=column)
+
+    rep_df.loc[rep_df["set"] == s, "reps_pred"] = reps
+
+rep_df
 
 # --------------------------------------------------------------
 # Evaluate the results
