@@ -217,3 +217,8 @@ rep_df
 # --------------------------------------------------------------
 # Evaluate the results
 # --------------------------------------------------------------
+
+error = mean_absolute_error(rep_df["reps"], rep_df["reps_pred"]).round(2)
+
+# create a quick plot to see where we went wrong
+rep_df.groupby(["label", "category"])["reps", "reps_pred"].mean().plot.bar()
